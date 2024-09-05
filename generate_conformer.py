@@ -1,8 +1,10 @@
 import argparse
 
+from time import time
+
 from rdkit import Chem, RDLogger
 from rdkit.Chem import AllChem
-from rdkit.Chem.rdDistGeom import EmbedMultipleConfs
+from rdkit.Chem.rdDistGeom import EmbedMultipleConfs, ETKDGv3
 from rdkit.Chem.rdForceFieldHelpers import (UFFOptimizeMoleculeConfs, MMFFOptimizeMoleculeConfs)
 
 RDLogger.DisableLog("rdApp.*")
@@ -18,7 +20,12 @@ def get_rdkit_mol(sdf):
 def generate_conformers(mol, num_confs, n_cpu):
     mol = Chem.AddHs(mol, addCoords=True)
     mol_conf = Chem.Mol(mol)
-    EmbedMultipleConfs(mol_conf, numConfs=num_confs, numThreads=n_cpu)
+    
+    params = ETKDGv3()
+    params.numThreds = n_cpu
+
+    EmbedMultipleConfs(mol_conf, numConfs=num_confs, params=params)
+	
     return mol, mol_conf
 
 
@@ -86,7 +93,8 @@ if __name__ == "__main__":
     mol = get_rdkit_mol(args.sdf)
     if args.out == "":
         args.out = args.sdf.rsplit(".", 1)[0] + "_conf.sdf"
-
+	
+    start = time()
     if args.verbose:
         smiles = Chem.MolToSmiles(mol)
         print(f"[INFO] Input SDF File: {args.sdf}")
@@ -102,6 +110,8 @@ if __name__ == "__main__":
 
     rmsds = calculate_rmsds( combined_mol )
     write_conformers( combined_mol, rmsds, args.out )
+    end = time()
 
     if args.verbose:
+        print(f"[INFO] Molecule Conformer Generation Time Usage: ", end - start)
         print(f"[INFO] Molecule Conformer Generation DONE: ", args.out)
