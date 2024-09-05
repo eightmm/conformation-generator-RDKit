@@ -17,17 +17,17 @@ This project provides a simple and flexible way to generate multiple conformers 
 ## Installation
 
 1. First, clone the repository:
-    \`\`\`bash
+    ```bash
     git clone https://github.com/your-username/conformation-generator.git
     cd conformation-generator
-    \`\`\`
+    ```
 
 2. Install the required dependencies (RDKit):
     RDKit can be installed via conda:
-    \`\`\`bash
+    ```bash
     conda create -c conda-forge -n rdkit-env rdkit
     conda activate rdkit-env
-    \`\`\`
+    ```
 
 3. If you're using another environment, ensure that RDKit and Python dependencies are properly installed.
 
